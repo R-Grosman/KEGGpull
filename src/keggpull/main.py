@@ -43,6 +43,20 @@ def get_organism_pathways(organism_code: str) -> str:
     return response.text
 
 
+def rest_response_validator(api_response: requests.Response) -> bool:
+    """Checks the REST query response and returns a bool"""
+    if api_response.status_code == 200:
+        logger.info(f"Query: {api_response.url} is valid")
+        return True
+    if api_response.status_code in [400, 404]:
+        logger.info(f"Query: {api_response.url} is invalid")
+        return False
+    logger.error(
+        f"Server responded with status code:{api_response.status_code} to {api_response.url}"
+    )
+    return False
+
+
 def parse_organism_pathways(kegg_organism_pathways: str) -> list[str]:
     """Parses the string return from KEGG into a list of pathways"""
     paths = kegg_organism_pathways.split("\n")
