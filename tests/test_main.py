@@ -1,8 +1,10 @@
 import pytest
+import requests
 
 from keggpull.main import (
     pad_list_items,
     parse_organism_pathways,
+    rest_response_validator,
     sort_lists,
     transpose_table,
 )
@@ -74,3 +76,12 @@ path:hsa00230	Purine metabolism - Homo sapiens (human)"""
         "hsa00230",
     ]
     assert parse_organism_pathways(input) == output
+
+
+def test_rest_response_validator():
+    mock_response_object = requests.Response()
+    test_cases = {200: True, 400: False, 404: False, 300: False, 100: False, 500: False}
+
+    for test_code, response in test_cases.items():
+        mock_response_object.status_code = test_code
+        assert rest_response_validator(mock_response_object) == response
