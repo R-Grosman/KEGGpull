@@ -4,6 +4,9 @@ import requests
 from keggpull.main import (
     pad_list_items,
     parse_organism_pathways,
+    pathway_kgml_url,
+    pathway_list_url,
+    pathway_text_url,
     rest_response_validator,
     sort_lists,
     transpose_table,
@@ -85,3 +88,27 @@ def test_rest_response_validator():
     for test_code, response in test_cases.items():
         mock_response_object.status_code = test_code
         assert rest_response_validator(mock_response_object) == response
+
+
+def test_pathway_kgml_url():
+    keys = ["hsa00010", "aga01124"]
+    vals = [f"https://rest.kegg.jp/get/{value}/kgml" for value in keys]
+    results = dict(zip(keys, vals))
+    for argument, response in results.items():
+        assert pathway_kgml_url(argument) == response
+
+
+def test_pathway_list_url():
+    keys = ["hsa", "aga"]
+    vals = [f"https://rest.kegg.jp/list/pathway/{value}" for value in keys]
+    results = dict(zip(keys, vals))
+    for argument, response in results.items():
+        assert pathway_list_url(argument) == response
+
+
+def test_pathway_text_url():
+    keys = ["hsa00010", "aga01124"]
+    vals = [f"https://rest.kegg.jp/get/{value}" for value in keys]
+    results = dict(zip(keys, vals))
+    for argument, response in results.items():
+        assert pathway_text_url(argument) == response
