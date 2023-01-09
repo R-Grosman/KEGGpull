@@ -65,7 +65,7 @@ def parse_organism_pathways(kegg_organism_pathways: str) -> list[str]:
     return paths
 
 
-def get_pathway_kgml(pathway_code: str) -> str:
+def get_pathway_kgml(pathway_code: str) -> tuple[str, str]:
     """Queries KEGG for a pathway and returns a tuple of path code and the pathway in KGML format"""
     url = pathway_kgml_url(pathway_code)
     response = requests.get(url)
@@ -73,13 +73,13 @@ def get_pathway_kgml(pathway_code: str) -> str:
     return pathway_code, response.text
 
 
-async def send_async_kgml_request(pathway_code: str) -> str:
+async def send_async_kgml_request(pathway_code: str) -> tuple[str, str]:
     """Async wrapper for the KGML requester"""
     return await asyncio.to_thread(get_pathway_kgml, pathway_code)
 
 
-def build_path_from_kgml(path_code: str, root: ET.ElementTree) -> list[str]:
-    """Parses teh KGML root (ElementTree object) and extracts the Compounds with C[0-9]{5} format"""
+def build_path_from_kgml(path_code: str, root: ET.Element) -> list[str]:
+    """Parses the KGML root (ElementTree object) and extracts the Compounds with C[0-9]{5} format"""
     regex = re.compile("C[0-9]{5}")
     compound_list = [
         path_code,
@@ -116,9 +116,17 @@ def transpose_table(input_list: list[list]) -> list[tuple]:
     return list(zip(*input_list))
 
 
-async def main():
+def build_xml_root(xml_str: str) -> ET.Element:
+    """Build the XML root from a string"""
+    return ET.fromstring(xml_str)
+
+
+async def main(organism_code: str | None = None):
     """Main async function"""
-    organism_code = "hsa"
+    if organism_code is None:
+        raise ValueError(
+            "please provide a three letter kegg organism code e.g 'hsa' for Homo Sapiens"
+        )
     paths = get_organism_pathways(organism_code)
     paths = parse_organism_pathways(paths)
     list_len = len(paths)
