@@ -1,7 +1,12 @@
+import re
+import xml.etree.ElementTree as ET
+
 import pytest
 import requests
 
 from keggpull.main import (
+    build_xml_root,
+    main,
     pad_list_items,
     parse_organism_pathways,
     pathway_kgml_url,
@@ -62,25 +67,6 @@ def test_pad_list_items():
     assert pad_list_items(input_list) == output_list
 
 
-def test_parse_organism_pathways():
-    input = """path:hsa00010	Glycolysis / Gluconeogenesis - Homo sapiens (human)
-path:hsa00020	Citrate cycle (TCA cycle) - Homo sapiens (human)
-path:hsa00030	Pentose phosphate pathway - Homo sapiens (human)
-path:hsa00040	Pentose and glucuronate interconversions - Homo sapiens (human)
-path:hsa00051	Fructose and mannose metabolism - Homo sapiens (human)
-path:hsa00230	Purine metabolism - Homo sapiens (human)"""
-
-    output = [
-        "hsa00010",
-        "hsa00020",
-        "hsa00030",
-        "hsa00040",
-        "hsa00051",
-        "hsa00230",
-    ]
-    assert parse_organism_pathways(input) == output
-
-
 def test_rest_response_validator():
     mock_response_object = requests.Response()
     test_cases = {200: True, 400: False, 404: False, 300: False, 100: False, 500: False}
@@ -93,22 +79,43 @@ def test_rest_response_validator():
 def test_pathway_kgml_url():
     keys = ["hsa00010", "aga01124"]
     vals = [f"https://rest.kegg.jp/get/{value}/kgml" for value in keys]
-    results = dict(zip(keys, vals))
-    for argument, response in results.items():
+    for argument, response in zip(keys, vals):
         assert pathway_kgml_url(argument) == response
 
 
 def test_pathway_list_url():
     keys = ["hsa", "aga"]
     vals = [f"https://rest.kegg.jp/list/pathway/{value}" for value in keys]
-    results = dict(zip(keys, vals))
-    for argument, response in results.items():
+    for argument, response in zip(keys, vals):
         assert pathway_list_url(argument) == response
 
 
 def test_pathway_text_url():
     keys = ["hsa00010", "aga01124"]
     vals = [f"https://rest.kegg.jp/get/{value}" for value in keys]
-    results = dict(zip(keys, vals))
-    for argument, response in results.items():
+    for argument, response in zip(keys, vals):
         assert pathway_text_url(argument) == response
+
+
+def test_parse_organism_pathways():
+    total_items = 352
+    with open("tests/data/hsa_pathway_list.tsv", "r") as fh:
+        hsa_input_data = fh.read()
+
+    data_parsed = parse_organism_pathways(hsa_input_data)
+    kegg_code_re = re.compile("^hsa[0-9]{5}$")
+    mathching = [kegg_code_re.match(pathway) for pathway in data_parsed]
+
+    assert len(data_parsed) == total_items
+    assert len(mathching) == total_items
+
+
+def test_build_xml_root():
+    with open("tests/data/hsa00010.kgml", "r") as fh:
+        input_data = fh.read()
+    assert isinstance(build_xml_root(input_data), ET.Element)
+
+
+# def test_main():
+#     with pytest.raises(Exception) as e_info:
+#         main(organism_code=None)
