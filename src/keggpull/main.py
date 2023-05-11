@@ -3,9 +3,17 @@ import logging
 import re
 import sys
 import xml.etree.ElementTree as ET
-
+import argparse
 import requests
+from tqdm.asyncio import tqdm_asyncio
+from datetime import datetime
 
+# from keggpull import __version__
+
+__author__ = "R-Grosman"
+__copyright__ = "R-Grosman"
+__license__ = "MIT"
+__version__ = "0.0.1"
 # from time import perf_counter
 
 
@@ -14,6 +22,58 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler(sys.stdout))
+
+
+def parse_args(args):
+    """Parse command line parameters
+
+    Args:
+      args (List[str]): command line parameters as list of strings
+          (for example  ``["--help"]``).
+
+    Returns:
+      :obj:`argparse.Namespace`: command line parameters namespace
+    """
+    parser = argparse.ArgumentParser(description="Tabulate and export all pathways and its metabolites for a given organism")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="KEGGpull {ver}".format(ver=__version__),
+    )
+    parser.add_argument(
+        "-o",
+        "--organism",
+        dest="organism",
+        help="three letter organism code e.g. hsa",
+        type=str,
+        metavar="ORG"
+        )
+    parser.add_argument(
+        "-of",
+        "--output-file",
+        dest="outputfile",
+        help="output file name",
+        type=str,
+        metavar="OUT",
+        nargs="?"
+        )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="loglevel",
+        help="set loglevel to INFO",
+        action="store_const",
+        const=logging.INFO,
+    )
+    parser.add_argument(
+        "-vv",
+        "--very-verbose",
+        dest="loglevel",
+        help="set loglevel to DEBUG",
+        action="store_const",
+        const=logging.DEBUG,
+    )
+    return parser.parse_args(args)
 
 
 def pathway_list_url(user_input: str) -> str:
@@ -121,18 +181,32 @@ def build_xml_root(xml_str: str) -> ET.Element:
     return ET.fromstring(xml_str)
 
 
-async def main(organism_code: str | None = None):
+async def main(args:argparse.Namespace):
     """Main async function"""
-    if organism_code is None:
-        raise ValueError(
-            "please provide a three letter kegg organism code e.g 'hsa' for Homo Sapiens"
-        )
-    paths = get_organism_pathways(organism_code)
+    # organism_code = args.organism
+    if args.loglevel:
+        logger.setLevel(args.loglevel)
+
+    if not args.outputfile:
+        args.outputfile = f"{args.organism}_{datetime.now():%Y%m%d%H%M%S}.tsv"
+
+    # if args.organism is None:
+    #     raise ValueError(
+    #         "please provide a three letter kegg organism code e.g 'hsa' for Homo Sapiens"
+    #     )
+    paths = get_organism_pathways(args.organism)
     paths = parse_organism_pathways(paths)
     list_len = len(paths)
 
-    logger.info(f"Path List RECEIVED for {organism_code}: {list_len} Pathways.")
-    responses = await asyncio.gather(*[send_async_kgml_request(path) for path in paths])
+    logger.info(f"Path List RECEIVED for {args.organism}: {list_len} Pathways.")
+    # responses = await asyncio.gather(*[send_async_kgml_request(path) for path in paths])
+    responses = await tqdm_asyncio.gather(*[send_async_kgml_request(path) for path in paths])
+    # responses = [send_async_kgml_request(path) for path in paths]
+    # for query in tqdm.asyncio.tqdm.as_completed(responses):
+    #     await query
+
+    logger.debug(f"{responses=}")
+
     kgml_roots = [
         (path_code, ET.fromstring(response)) for path_code, response in responses
     ]
@@ -146,12 +220,21 @@ async def main(organism_code: str | None = None):
     result = transpose_table(result)
 
     output_str = ["\t".join(line) + "\n" for line in result]
-    with open("OUTPUT.tsv", "w") as fh:
+    with open(args.outputfile, "w") as fh:
         fh.writelines(output_str)
+    logger.info(f"Table created: {args.outputfile}")
+
+def run():
+    """ main entry point for terminal execution"""
+    args = parse_args(sys.argv[1:])
+    logger.debug(f"{args=}")
+    asyncio.run(main(args))
 
 
 # Initiate Script
 if __name__ == "__main__":
     # start = perf_counter()
-    asyncio.run(main())
+    # args = parse_args(["-o", "aga","-of","output_test.tsv"])
+    args = parse_args(["-o", "aga"])
+    asyncio.run(main(args))
     # print(f"Time = {perf_counter() - start}")
