@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
-def parse_args(args):
+def parse_args(args: list[str]) -> argparse.Namespace:
     """Parse command line parameters
 
     Args:
