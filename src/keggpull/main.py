@@ -191,7 +191,7 @@ async def main(args:argparse.Namespace):
         args.outputfile = f"{args.organism}_{datetime.now():%Y%m%d%H%M%S}.tsv"
 
     if args.organism is None:
-        raise ValueError(
+        logger.error(
             "please provide a three letter kegg organism code e.g 'hsa' for Homo Sapiens"
         )
     paths = get_organism_pathways(args.organism)
