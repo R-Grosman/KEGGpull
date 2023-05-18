@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
-def parse_args(args: list[str]) -> argparse.Namespace:
+def init_parser() -> argparse.ArgumentParser:
     """Parse command line parameters
 
     Args:
@@ -73,7 +73,8 @@ def parse_args(args: list[str]) -> argparse.Namespace:
         action="store_const",
         const=logging.DEBUG,
     )
-    return parser.parse_args(args)
+    return parser
+    
 
 
 def pathway_list_url(user_input: str) -> str:
@@ -226,15 +227,26 @@ async def main(args:argparse.Namespace):
 
 def run():
     """ main entry point for terminal execution"""
-    args = parse_args(sys.argv[1:])
+    parser = init_parser()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    args = parser.parse_args(sys.argv[1:])
     logger.debug(f"{args=}")
     asyncio.run(main(args))
+    sys.exit(0)
 
 
 # Initiate Script
 if __name__ == "__main__":
     # start = perf_counter()
     # args = parse_args(["-o", "aga","-of","output_test.tsv"])
-    args = parse_args(["-o", "aga"])
+    # args = parse_args(["-o", "aga"])
+    input_args = ["__main__", "wqe"]
+    parser = init_parser()
+    if len(input_args) == 1:
+        parser.print_help()
+        sys.exit(1)
+    args = parser.parse_args(input_args[1:])
     asyncio.run(main(args))
     # print(f"Time = {perf_counter() - start}")
