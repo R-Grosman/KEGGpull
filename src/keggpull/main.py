@@ -13,7 +13,7 @@ from datetime import datetime
 __author__ = "R-Grosman"
 __copyright__ = "R-Grosman"
 __license__ = "MIT"
-__version__ = "0.0.1"
+__version__ = "0.2.0"
 # from time import perf_counter
 
 
