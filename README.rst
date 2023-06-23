@@ -13,19 +13,13 @@
     .. image:: https://img.shields.io/pypi/v/KEGGpull.svg
         :alt: PyPI-Server
         :target: https://pypi.org/project/KEGGpull/
-    .. image:: https://img.shields.io/conda/vn/conda-forge/KEGGpull.svg
-        :alt: Conda-Forge
-        :target: https://anaconda.org/conda-forge/KEGGpull
-    .. image:: https://pepy.tech/badge/KEGGpull/month
-        :alt: Monthly Downloads
-        :target: https://pepy.tech/project/KEGGpull
-    .. image:: https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter
-        :alt: Twitter
-        :target: https://twitter.com/KEGGpull
 
 .. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
     :alt: Project generated with PyScaffold
     :target: https://pyscaffold.org/
+.. image:: https://pepy.tech/badge/KEGGpull/month
+    :alt: Monthly Downloads
+    :target: https://pepy.tech/project/KEGGpull
 
 |
 
@@ -34,10 +28,16 @@ KEGGpull
 ========
 
 
-    Add a short description here!
+    An async utility for creating metabolite tables from KEGG database.
 
 
-A longer description of your project goes here...
+To perform pathway enrichment analysis one of the inputs required is a table of metabolites per pathway.
+KEGG[1-3] is a great database for this purpose.
+KEGGpull streamlines this process by using async requests and formats the results and finally exports as a tab separated file.
+
+[1]Kanehisa, M. and Goto, S.; KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res. 28, 27-30 (2000). `doi <https://doi.org/10.1093/nar/28.1.27>`
+[2]Kanehisa, M; Toward understanding the origin and evolution of cellular organisms. Protein Sci. 28, 1947-1951 (2019). `doi <https://doi.org/10.1002/pro.3715>`
+[3]Kanehisa, M., Furumichi, M., Sato, Y., Kawashima, M. and Ishiguro-Watanabe, M.; KEGG for taxonomy-based analysis of pathways and genomes. Nucleic Acids Res. 51, D587-D592 (2023). `doi <https://doi.org/10.1093/nar/gkac963>`
 
 
 .. _pyscaffold-notes:
