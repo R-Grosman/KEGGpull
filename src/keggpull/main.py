@@ -1,12 +1,13 @@
 import asyncio
-from argparser import init_parser
 import sys
 import xml.etree.ElementTree as ET
 import argparse
 from tqdm.asyncio import tqdm_asyncio
 from datetime import datetime
-import utilities as utils
-from logger import logger
+
+from .argparser import init_parser
+from . import utilities as utils
+from .logger import logger
 
 __author__ = "R-Grosman"
 __copyright__ = "R-Grosman"

@@ -3,7 +3,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 import requests
-from logger import logger
+from .logger import logger
 
 __author__ = "R-Grosman"
 __copyright__ = "R-Grosman"
