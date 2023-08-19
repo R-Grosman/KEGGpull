@@ -17,9 +17,9 @@
 .. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
     :alt: Project generated with PyScaffold
     :target: https://pyscaffold.org/
-.. image:: https://pepy.tech/badge/KEGGpull/month
-    :alt: Monthly Downloads
-    :target: https://pepy.tech/project/KEGGpull
+.. .. image:: https://pepy.tech/badge/KEGGpull/month
+..     :alt: Monthly Downloads
+..     :target: https://pepy.tech/project/KEGGpull
 
 |
 
