@@ -58,3 +58,5 @@ venv/
 *.code-workspace
 
 *.env
+
+*.tsv

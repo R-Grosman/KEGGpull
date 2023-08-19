@@ -34,8 +34,6 @@ async def main(args:argparse.Namespace):
     logger.info(f"Path List RECEIVED for {args.organism}: {list_len} Pathways.")
     responses = await tqdm_asyncio.gather(*[utils.send_async_kgml_request(path) for path in paths])
 
-    logger.debug(f"{responses=}")
-
     kgml_roots = [
         (path_code, ET.fromstring(response)) for path_code, response in responses
     ]
@@ -45,6 +43,7 @@ async def main(args:argparse.Namespace):
     ]
 
     result = utils.sort_lists(result)
+    logger.debug(f"{result=}")
     result = utils.pad_list_items(result)
     result = utils.transpose_table(result)
 

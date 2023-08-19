@@ -17,7 +17,7 @@ def init_parser() -> argparse.ArgumentParser:
     Returns:
       :obj:`argparse.Namespace`: command line parameters namespace
     """
-    parser = argparse.ArgumentParser(description="Tabulate and export all pathways and its metabolites for a given organism")
+    parser = argparse.ArgumentParser(description="Tabulate and export all pathways and its metabolites for a given organism in tab separated format.")
     parser.add_argument(
         "--version",
         action="version",
